@@ -27,7 +27,8 @@
 % OUTPUTS:
 %   pdTable : calculated velocity PD table with CIs
 %
-% Written by Raeed Chowdhury. Updated Nov 2017.
+% Written by Raeed Chowdhury. Updated June 2020 by KPB.
+% Added the bootstrap estimates of PDs to neuron-table output 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function pdTable = getTDPDs(trial_data,params)
@@ -117,6 +118,7 @@ for uid = 1:size(response_var,2)
         move_corr = in_signals{in_signal_idx,1};
 
         dirs = atan2(boot_coef(:,1+in_signal_idx*2),boot_coef(:,in_signal_idx*2));
+        tab_append{in_signal_idx}.([prefix move_corr 'bootstraps'])(uid,:)={dirs};
         %handle wrap around problems:
         centeredDirs=minusPi2Pi(dirs-circ_mean(dirs));
 
@@ -170,6 +172,6 @@ for uid = 1:size(response_var,2)
         fprintf('  Bootstrapping GLM PD computation %d of %d (ET=%f s)\n',uid,size(response_var,2),toc(unit_tic))
     end
 end
-starter = makeNeuronTableStarter(trial_data,params);
-pdTable = horzcat(starter,tab_append{:});
+% starter = makeNeuronTableStarter(trial_data,params);
+pdTable = tab_append{:};
 end%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
